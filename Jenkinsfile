@@ -1,6 +1,10 @@
 pipeline {
   agent any
 
+  tools {
+    nodejs 'node20'
+  }
+
   options {
     timestamps()
   }
@@ -20,13 +24,7 @@ pipeline {
     stage('Install Dependencies') {
       steps {
         dir('app') {
-          script {
-            if (isUnix()) {
-              sh 'npm ci'
-            } else {
-              bat 'npm.cmd ci'
-            }
-          }
+          sh 'npm ci'
         }
       }
     }
@@ -34,13 +32,7 @@ pipeline {
     stage('Run Tests') {
       steps {
         dir('app') {
-          script {
-            if (isUnix()) {
-              sh 'npm test'
-            } else {
-              bat 'npm.cmd test'
-            }
-          }
+          sh 'npm test'
         }
       }
     }
