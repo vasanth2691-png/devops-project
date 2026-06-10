@@ -1,0 +1,9 @@
+- [x] Verify that the copilot-instructions.md file in the .github directory is created.
+- [x] Clarify project requirements (Node.js DevOps sample workspace).
+- [x] Scaffold the project in the current folder.
+- [x] Customize project with Docker, Kubernetes, Helm, CI, and Terraform starter.
+- [x] Install required extensions (none required by setup tool).
+- [x] Compile the project (dependencies installed with npm.cmd; tests passing).
+- [x] Create and run task (skipped for now).
+- [x] Launch the project (validated via Docker Compose and Kubernetes service health checks).
+- [x] Ensure documentation is complete (README and this file updated).

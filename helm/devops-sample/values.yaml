@@ -1,0 +1,21 @@
+replicaCount: 2
+
+image:
+  repository: devops-sample-api
+  tag: latest
+  pullPolicy: IfNotPresent
+
+service:
+  type: ClusterIP
+  port: 80
+  targetPort: 3000
+
+env:
+  PORT: "3000"
+  DB_HOST: "postgres"
+  DB_PORT: "5432"
+  DB_NAME: "devops_sample"
+
+secret:
+  DB_USER: postgres
+  DB_PASSWORD: postgres

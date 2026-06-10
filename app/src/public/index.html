@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>DevOps Project Control Room</title>
+    <link rel="stylesheet" href="/static/styles.css" />
+  </head>
+  <body>
+    <div class="bg-glow bg-glow-a"></div>
+    <div class="bg-glow bg-glow-b"></div>
+
+    <header class="hero">
+      <p class="badge">DEVOPS SAMPLE WORKSPACE</p>
+      <h1>Build. Ship. Observe.</h1>
+      <p class="subtitle">
+        A colorful DevOps playground with API health checks, container workflow,
+        Kubernetes deployments, Helm charts, Terraform starter, GitHub Actions,
+        and Jenkins pipeline.
+      </p>
+      <div class="hero-actions">
+        <button id="healthBtn">Check Live Health</button>
+        <a href="/api/info">Open API Info</a>
+      </div>
+      <pre id="healthOutput">Press "Check Live Health" to fetch /health ...</pre>
+    </header>
+
+    <main class="grid">
+      <section class="card">
+        <h2>Architecture</h2>
+        <ul>
+          <li>Developer pushes code to Git repository</li>
+          <li>CI pipeline runs tests and image build</li>
+          <li>Docker image deployed to Kubernetes</li>
+          <li>Service exposes API and health endpoint</li>
+          <li>Terraform manages cloud infrastructure</li>
+        </ul>
+      </section>
+
+      <section class="card">
+        <h2>Installed Toolchain</h2>
+        <ul>
+          <li>Git + VS Code</li>
+          <li>Node.js + npm</li>
+          <li>Docker Desktop</li>
+          <li>kubectl + kind</li>
+          <li>Helm + Terraform</li>
+          <li>Jenkins + GitHub Actions</li>
+        </ul>
+      </section>
+
+      <section class="card">
+        <h2>Practice Flow</h2>
+        <ol>
+          <li>Run local tests</li>
+          <li>Build and run with Docker Compose</li>
+          <li>Deploy manifests to kind cluster</li>
+          <li>Deploy same app via Helm chart</li>
+          <li>Validate infrastructure with Terraform</li>
+        </ol>
+      </section>
+
+      <section class="card">
+        <h2>Useful Endpoints</h2>
+        <ul>
+          <li><a href="/">/</a> Frontend dashboard</li>
+          <li><a href="/health">/health</a> Live status</li>
+          <li><a href="/api/info">/api/info</a> API metadata</li>
+        </ul>
+      </section>
+    </main>
+
+    <script>
+      const button = document.getElementById('healthBtn');
+      const output = document.getElementById('healthOutput');
+
+      button.addEventListener('click', async () => {
+        output.textContent = 'Loading /health ...';
+        try {
+          const response = await fetch('/health');
+          const payload = await response.json();
+          output.textContent = JSON.stringify(payload, null, 2);
+        } catch (error) {
+          output.textContent = `Health request failed: ${error.message}`;
+        }
+      });
+    </script>
+  </body>
+</html>

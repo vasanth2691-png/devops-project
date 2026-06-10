@@ -1,0 +1,10 @@
+node_modules/
+app/node_modules/
+.env
+app/.env
+*.tfstate
+*.tfstate.*
+.terraform/
+.terraform.lock.hcl
+coverage/
+.vscode/
