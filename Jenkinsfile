@@ -8,6 +8,7 @@ pipeline {
   environment {
     IMAGE_NAME = 'devops-sample-api'
     IMAGE_TAG = "jenkins-${env.BUILD_NUMBER}"
+    DOCKER_AVAILABLE = 'false'
   }
 
   stages {
@@ -79,9 +80,21 @@ pipeline {
       steps {
         script {
           if (isUnix()) {
-            sh 'docker build -t ${IMAGE_NAME}:${IMAGE_TAG} .'
+            def dockerPresent = sh(script: 'command -v docker >/dev/null 2>&1', returnStatus: true) == 0
+            if (dockerPresent) {
+              sh 'docker build -t ${IMAGE_NAME}:${IMAGE_TAG} .'
+              env.DOCKER_AVAILABLE = 'true'
+            } else {
+              echo 'Docker CLI is not available on this Jenkins agent. Skipping image build stage.'
+            }
           } else {
-            bat 'docker build -t %IMAGE_NAME%:%IMAGE_TAG% .'
+            def dockerPresent = bat(script: 'where docker', returnStatus: true) == 0
+            if (dockerPresent) {
+              bat 'docker build -t %IMAGE_NAME%:%IMAGE_TAG% .'
+              env.DOCKER_AVAILABLE = 'true'
+            } else {
+              echo 'Docker CLI is not available on this Jenkins agent. Skipping image build stage.'
+            }
           }
         }
       }
@@ -89,7 +102,7 @@ pipeline {
 
     stage('Optional Push') {
       when {
-        expression { return env.DOCKERHUB_REPO?.trim() }
+        expression { return env.DOCKER_AVAILABLE == 'true' && env.DOCKERHUB_REPO?.trim() }
       }
       steps {
         script {
