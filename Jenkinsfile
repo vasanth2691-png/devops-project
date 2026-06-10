@@ -9,6 +9,10 @@ pipeline {
     IMAGE_NAME = 'devops-sample-api'
     IMAGE_TAG = "jenkins-${env.BUILD_NUMBER}"
     DOCKER_AVAILABLE = 'false'
+    DEPLOY_NAMESPACE = 'devops-sample'
+    DEPLOYMENT_NAME = 'api'
+    CONTAINER_NAME = 'api'
+    KIND_CLUSTER = 'devops-sample'
   }
 
   stages {
@@ -113,6 +117,32 @@ pipeline {
           } else {
             bat "docker tag %IMAGE_NAME%:%IMAGE_TAG% ${fullImage}"
             bat "docker push ${fullImage}"
+          }
+        }
+      }
+    }
+
+    stage('Deploy To kind') {
+      when {
+        expression { return env.DOCKER_AVAILABLE == 'true' }
+      }
+      steps {
+        script {
+          if (isUnix()) {
+            def kindPresent = sh(script: 'command -v kind >/dev/null 2>&1', returnStatus: true) == 0
+            def kubectlPresent = sh(script: 'command -v kubectl >/dev/null 2>&1', returnStatus: true) == 0
+
+            if (!kindPresent || !kubectlPresent) {
+              echo 'kind and/or kubectl are not available on this Jenkins agent. Skipping deploy stage.'
+              return
+            }
+
+            def fullImage = "${env.IMAGE_NAME}:${env.IMAGE_TAG}"
+            sh "kind load docker-image ${fullImage} --name ${env.KIND_CLUSTER}"
+            sh "kubectl set image deployment/${env.DEPLOYMENT_NAME} ${env.CONTAINER_NAME}=${fullImage} -n ${env.DEPLOY_NAMESPACE}"
+            sh "kubectl rollout status deployment/${env.DEPLOYMENT_NAME} -n ${env.DEPLOY_NAMESPACE} --timeout=180s"
+          } else {
+            echo 'Deploy stage currently configured for Linux Jenkins agent. Skipping on Windows agent.'
           }
         }
       }
