@@ -123,11 +123,13 @@ pipeline {
     }
 
     stage('Deploy To kind') {
-      when {
-        expression { return env.DOCKER_AVAILABLE == 'true' }
-      }
       steps {
         script {
+          if (env.DOCKER_AVAILABLE != 'true') {
+            echo 'Docker image was not built on this agent. Skipping deploy stage.'
+            return
+          }
+
           if (isUnix()) {
             def kindPresent = sh(script: 'command -v kind >/dev/null 2>&1', returnStatus: true) == 0
             def kubectlPresent = sh(script: 'command -v kubectl >/dev/null 2>&1', returnStatus: true) == 0
