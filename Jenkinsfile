@@ -26,9 +26,11 @@ pipeline {
               NODE_DIR="$WORKSPACE/.tools/node-v20"
               if [ ! -x "$NODE_DIR/bin/node" ]; then
                 mkdir -p "$WORKSPACE/.tools"
-                curl -fsSL https://nodejs.org/dist/latest-v20.x/node-v20.19.2-linux-x64.tar.xz -o "$WORKSPACE/.tools/node.tar.xz"
+                NODE_TARBALL=$(curl -fsSL https://nodejs.org/dist/latest-v20.x/SHASUMS256.txt | awk '/linux-x64.tar.xz$/ {print $2}')
+                curl -fsSL "https://nodejs.org/dist/latest-v20.x/$NODE_TARBALL" -o "$WORKSPACE/.tools/node.tar.xz"
                 tar -xJf "$WORKSPACE/.tools/node.tar.xz" -C "$WORKSPACE/.tools"
-                mv "$WORKSPACE/.tools/node-v20.19.2-linux-x64" "$NODE_DIR"
+                EXTRACTED_DIR=$(tar -tf "$WORKSPACE/.tools/node.tar.xz" | head -1 | cut -d/ -f1)
+                mv "$WORKSPACE/.tools/$EXTRACTED_DIR" "$NODE_DIR"
               fi
             '''
           }
